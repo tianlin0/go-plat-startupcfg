@@ -8,6 +8,7 @@ import (
 	"github.com/tianlin0/go-plat-utils/conv"
 	"github.com/tianlin0/go-plat-utils/crypto"
 	"github.com/tianlin0/go-plat-utils/utils"
+	"gopkg.in/yaml.v3"
 	"testing"
 )
 
@@ -17,7 +18,7 @@ const (
 
 func init1() {
 	startupcfg.SetDecryptHandler(func(m startupcfg.Encrypted) (string, error) {
-		mysqlPwd, _ := crypto.CBCDecrypt(string(m), encKey)
+		mysqlPwd, _ := crypto.CbcDecrypt(string(m), encKey, new(crypto.HexCoder))
 		return mysqlPwd, nil
 	})
 
@@ -32,8 +33,8 @@ func TestStartConfig(t *testing.T) {
 		return
 	}
 
-	mysqlPwd, _ := crypto.CBCEncrypt("root", encKey)
-	tCRPullCommConn, _ := crypto.CBCEncrypt("datamore@2019", encKey)
+	mysqlPwd, _ := crypto.CbcEncrypt("root", encKey, new(crypto.HexCoder))
+	tCRPullCommConn, _ := crypto.CbcEncrypt("datamore@2019", encKey, new(crypto.HexCoder))
 
 	fmt.Println(mysqlPwd, tCRPullCommConn)
 
@@ -76,14 +77,14 @@ func TestStartConfig(t *testing.T) {
 }
 
 func TestEncrypt(t *testing.T) {
-	mysqlPwd, _ := crypto.CBCEncrypt("root", encKey)
-	mysqlCode, _ := crypto.CBCDecrypt(mysqlPwd, encKey)
+	mysqlPwd, _ := crypto.CbcEncrypt("root", encKey)
+	mysqlCode, _ := crypto.CbcDecrypt(mysqlPwd, encKey)
 
 	t.Log(mysqlPwd)
 	t.Log(mysqlCode)
 }
 func TestDecrypt(t *testing.T) {
-	mysqlCode, _ := crypto.CBCDecrypt("a792a5b35ac43cc0132a093ff06b395b5412eed5f9ee71f48e1b62ef048052d5", encKey)
+	mysqlCode, _ := crypto.CbcDecrypt("a792a5b35ac43cc0132a093ff06b395b5412eed5f9ee71f48e1b62ef048052d5", encKey)
 
 	t.Log(mysqlCode)
 }

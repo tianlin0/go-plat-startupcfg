@@ -2,6 +2,16 @@ package startupcfg
 
 import "fmt"
 
+// ServiceAPI 服务接口抽象
+type ServiceAPI interface {
+	// DomainName 接口域名
+	DomainName() string
+	// Url 接口Url
+	Url(apiName string) string
+	// AuthData 接口其他数据（鉴权数据等）
+	AuthData(key string) (string, error)
+}
+
 // ServiceApiConfig 服务接口
 type ServiceApiConfig struct {
 	Domain string               `json:"domain" yaml:"domain"`
