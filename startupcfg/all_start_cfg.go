@@ -1,7 +1,6 @@
 package startupcfg
 
 import (
-	startupCfg "github.com/tianlin0/go-plat-utils/conf/startupcfg"
 	"github.com/tianlin0/go-plat-utils/conv"
 	"github.com/tianlin0/go-plat-utils/templates"
 )
@@ -9,32 +8,32 @@ import (
 type urlStruct struct {
 	ServiceName   string
 	ApiName       string
-	serviceAPICfg *startupCfg.ServiceApiConfig
+	serviceAPICfg *ServiceApiConfig
 	ServiceAPIUrl string
 }
 
 // ServiceApiCfg 直接获取url全地址
-func (u *urlStruct) ServiceApiCfg() *startupCfg.ServiceApiConfig {
+func (u *urlStruct) ServiceApiCfg() *ServiceApiConfig {
 	return u.serviceAPICfg
 }
 
 // StartCfg 初始化一个自定义配置
 type StartCfg struct {
-	Mysql           map[string]*startupCfg.MysqlConfig
-	Redis           map[string]*startupCfg.RedisConfig
-	Api             map[string]*startupCfg.ServiceApiConfig
+	Mysql           map[string]*MysqlConfig
+	Redis           map[string]*RedisConfig
+	Api             map[string]*ServiceApiConfig
 	Custom          map[string]interface{}
-	CustomSensitive map[string]startupCfg.Encrypted
+	CustomSensitive map[string]Encrypted
 }
 
-func getInstanceFromYaml(isFilePathName bool, configFile string) (*startupCfg.ConfigAPI, error) {
-	var conf *startupCfg.ConfigAPI
+func getInstanceFromYaml(isFilePathName bool, configFile string) (*ConfigAPI, error) {
+	var conf *ConfigAPI
 	var err error
 
 	if isFilePathName {
-		conf, err = startupCfg.NewByYamlFile(configFile)
+		conf, err = NewByYamlFile(configFile)
 	} else {
-		conf, err = startupCfg.NewByYaml([]byte(configFile))
+		conf, err = NewByYaml([]byte(configFile))
 	}
 
 	if err != nil {
@@ -61,7 +60,7 @@ func NewStartupForYamlContent(configContent string) (*StartCfg, error) {
 	return commGetStartup(confTemp)
 }
 
-func commGetStartup(sConf *startupCfg.ConfigAPI) (*StartCfg, error) {
+func commGetStartup(sConf *ConfigAPI) (*StartCfg, error) {
 	startTemp := new(StartCfg)
 	startTemp.Mysql = sConf.MysqlAll()
 	startTemp.Redis = sConf.RedisAll()
@@ -82,8 +81,8 @@ func (s *StartCfg) AllApiUrlMap() map[string]string {
 }
 
 // AllMysqlMap 所有mysql配置列表
-func (s *StartCfg) AllMysqlMap() (map[string]*startupCfg.MysqlConfig, error) {
-	customMapNew := make(map[string]*startupCfg.MysqlConfig)
+func (s *StartCfg) AllMysqlMap() (map[string]*MysqlConfig, error) {
+	customMapNew := make(map[string]*MysqlConfig)
 
 	if s.Mysql != nil {
 		for key, val := range s.Mysql {
@@ -94,8 +93,8 @@ func (s *StartCfg) AllMysqlMap() (map[string]*startupCfg.MysqlConfig, error) {
 }
 
 // AllRedisMap 所有redis配置
-func (s *StartCfg) AllRedisMap() (map[string]*startupCfg.RedisConfig, error) {
-	customMapNew := make(map[string]*startupCfg.RedisConfig)
+func (s *StartCfg) AllRedisMap() (map[string]*RedisConfig, error) {
+	customMapNew := make(map[string]*RedisConfig)
 
 	if s.Redis != nil {
 		for key, val := range s.Redis {

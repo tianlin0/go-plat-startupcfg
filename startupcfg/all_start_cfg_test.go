@@ -2,11 +2,10 @@ package startupcfg_test
 
 import (
 	"fmt"
-	"github.com/tianlin0/go-plat-utils/conf/startupcfg"
+	"github.com/tianlin0/go-plat-startupcfg/startupcfg"
 	"github.com/tianlin0/go-plat-utils/conn"
 	"github.com/tianlin0/go-plat-utils/conv"
 	"github.com/tianlin0/go-plat-utils/crypto"
-	"github.com/tianlin0/go-plat-utils/startconf"
 	"testing"
 )
 
@@ -48,7 +47,7 @@ func TestGetAllApiUrlMap(t *testing.T) {
 		return str, nil
 	})
 
-	one, _ := startconf.NewStartupForYamlFile("all_start_cfg_test.yaml")
+	one, _ := startupcfg.NewStartupForYamlFile("all_start_cfg_test.yaml")
 	mapTemp := one.AllApiUrlMap()
 	tempUrl := new(TemplateURL)
 	conv.Unmarshal(mapTemp, tempUrl)
