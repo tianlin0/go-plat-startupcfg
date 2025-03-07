@@ -2,8 +2,11 @@ package startupcfg
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 )
+
+var _ Database = (*RedisConfig)(nil)
 
 // RedisConfig redis配置
 type RedisConfig struct {
@@ -37,7 +40,7 @@ func (c *RedisConfig) ServerAddress() string {
 func (c *RedisConfig) Password() string {
 	pass, err := c.PasswordEncoded.Get()
 	if err != nil {
-		return ""
+		log.Println("redis password decode error:", err)
 	}
 	return pass
 }
@@ -53,10 +56,10 @@ func (c *RedisConfig) User() string {
 }
 
 // Extend 扩展字段
-func (c *RedisConfig) Extend(name ExtendField) interface{} {
+func (c *RedisConfig) Extend(name ExtendField) (interface{}, bool) {
 	switch name {
 	case extendRedisUseTLS:
-		return c.UseTLS
+		return c.UseTLS, true
 	}
-	return nil
+	return nil, false
 }

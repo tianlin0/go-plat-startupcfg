@@ -6,6 +6,8 @@ import (
 	"net/url"
 )
 
+var _ Database = (*MysqlConfig)(nil)
+
 // MysqlConfig mysql配置
 type MysqlConfig struct {
 	UserName        string    `json:"username" yaml:"username"`
@@ -47,8 +49,7 @@ func (c *MysqlConfig) User() string {
 func (c *MysqlConfig) Password() string {
 	pass, err := c.PasswordEncoded.Get()
 	if err != nil {
-		log.Println("password decode error:", err)
-		return ""
+		log.Println("mysql password decode error:", err)
 	}
 	return pass
 }
@@ -59,10 +60,10 @@ func (c *MysqlConfig) DatabaseName() interface{} {
 }
 
 // Extend 扩展字段
-func (c *MysqlConfig) Extend(name ExtendField) interface{} {
+func (c *MysqlConfig) Extend(name ExtendField) (interface{}, bool) {
 	switch name {
 	case extendMysqlCharset:
-		return c.Charset
+		return c.Charset, true
 	}
-	return nil
+	return nil, false
 }

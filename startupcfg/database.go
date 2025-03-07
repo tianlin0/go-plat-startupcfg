@@ -15,5 +15,5 @@ type Database interface {
 	// User 数据库用户
 	User() string
 	// Extend 扩展信息
-	Extend(ExtendField) interface{}
+	Extend(ExtendField) (interface{}, bool)
 }
