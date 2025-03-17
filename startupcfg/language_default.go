@@ -4,6 +4,7 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/tianlin0/go-plat-utils/templates"
 	"golang.org/x/net/context"
+	"golang.org/x/text/language"
 	"sync"
 )
 
@@ -40,6 +41,22 @@ func NewI18nFile(yamlFile string, defaultTagString string) (*i18nTranslator, err
 		defaultTranslator = new(i18nTranslator)
 	}
 	err := defaultTranslator.InitFile(yamlFile, defaultTagString)
+	if err != nil {
+		return defaultTranslator, err
+	}
+	//初始化默认解析器
+	//defaultTranslator.SetTemplateParser(new(defaultParser))
+	return defaultTranslator, nil
+}
+
+// NewI18nMap 初始化
+func NewI18nMap(langData map[language.Tag]map[string]string, defaultTagString string) (*i18nTranslator, error) {
+	langLock.Lock()
+	defer langLock.Unlock()
+	if defaultTranslator == nil {
+		defaultTranslator = new(i18nTranslator)
+	}
+	err := defaultTranslator.InitMap(langData, defaultTagString)
 	if err != nil {
 		return defaultTranslator, err
 	}
