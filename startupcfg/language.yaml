@@ -1,5 +1,5 @@
 en:
-  "aaa.bbbb.ccccc": "aaaaaaaaa"
+  "aaa.bbbb.ccccc": "aaaaaaaaa{{.Name}}"
   "aaa.bbbb.ccccc.dddd": "Parameter parsing failedddddddd"
 zh:
   "aaa.bbbb.ccccc": "错误{{.Name}}"
