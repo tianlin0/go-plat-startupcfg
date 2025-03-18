@@ -50,13 +50,20 @@ func NewYamlFile(yamlFilePath string, defaultTagString string) (*translator, err
 }
 
 // NewI18nMap 初始化
-func NewI18nMap(langData map[language.Tag]map[string]string, defaultTagString string) (*translator, error) {
+// langData  map[string] string 语言简称，map[string]string key,value
+func NewI18nMap(langData map[string]map[string]string, defaultTagString string) (*translator, error) {
 	langLock.Lock()
 	defer langLock.Unlock()
 	if defaultTranslator == nil {
 		defaultTranslator = new(translator)
 	}
-	err := defaultTranslator.InitMap(langData, defaultTagString)
+
+	confMap := make(map[language.Tag]map[string]string)
+	for k, v := range langData {
+		confMap[language.Make(k)] = v
+	}
+
+	err := defaultTranslator.InitMap(confMap, defaultTagString)
 	if err != nil {
 		return defaultTranslator, err
 	}

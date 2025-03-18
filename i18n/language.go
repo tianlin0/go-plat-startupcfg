@@ -50,7 +50,6 @@ func (l *translator) InitMap(conf map[language.Tag]map[string]string, defaultTag
 			return err
 		}
 	}
-
 	return nil
 }
 
