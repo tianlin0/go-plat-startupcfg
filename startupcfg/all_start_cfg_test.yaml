@@ -2,54 +2,29 @@ api: # 接口调用配置 示范
   # 区域/环境/服务名
   # 全局
   gdp-appserver-go:
-    domain: http://xxxxxx.gdppubdev3.woa.com
+    domain: http://xxxxxx.aa.com
     urls:
-      TemplateGetCdBiz: /v1/project/{{.projectName}}/paas/{{.paasName}}/cds/{{.cdId}}/get-cd-biz
+      TemplateGetCdBiz: /v1/project/{{.projectName}}/paas/{{.paasName}}
   odp-external:
     domain: http://www.baidu.com
     urls:
-      GetPodListByCdId: /v1/project/{{.project_name}}/paas/{{.paas_name}}/cds/{{.cdId}}/pods-informer
+      GetPodListByCdId: /v1/project/{{.project_name}}/paas/{{.paas_name}}
 mysql: # mysql 地域/环境/变量名
   MysqlConnect:
-    address: gamedb.datacenter.db:10000
-    username: gdpdev
+    address: 127.0.0.1:10000
+    username: kkk
     pwEncoded: 62457c673b9ff5f732cf87081f1c800a12fae7dcaf5c9fdfa68ae27f0dab7749
-    database: db_gdp_server_dev
-  MysqlConnectODP:
-    address: gamedb.dcbigdata.db:10001
-    username: idata
-    pwEncoded: fcf13155e37a48f7481fd3f4f4d93a764d0c251293e767eaa753cec85aae7a87
-    database: db_odp_server_dev
+    database: db_server
 redis: # redis 配置
   RedisConnect:
-    address: ins.dcother.db:30000
+    address: 127.0.0.1:30000
     pwEncoded: f3e638bed907bf583a9820c192a2dbcf39b76d89683c767e9f70deb91d68c26b
     database: 1
 custom: # 自定义配置
   sensitive: # 加密敏感配置
-    tCRPullCommConn: 2d95eb4772acda55b1060212508936162ad132fdccb4892ba7aec4f3491d6ebb
     defaultSensitiveAppKey: b5f411796069c770542d8d8b112912689b972a226d6593de6d49e188159d571cbf92d844266b409acf080ef2113af11c
   normal: # 非加密普通配置
-    UserBlackAuthConfigList:
-      - userIdMatchRules:
-          characters:
-            - "gdp_"
-            - "v_"
-        forbiddenPolicyKeys:
-          - module: cd
-            policy_key: CD_WEBSHELL_LOGIN_INTERVAL
-          - module: cd
-            policy_key: CD_WEBSHELL_LOGIN_INTERVAL_RELEASE
     DefaultRTXLoginToken: "{{.defaultRTXLoginToken}}"
-    DefaultSystemRoleNameMap:
-      project:
-        - project_managers
-        - project_operators
-      paas:
-        - paas_managers
-      business:
-        - business_managers
-        - business_users
     HostAndPort:
-      host: 0.0.5.0
+      host: 0.0.0.0
       port: 8084
