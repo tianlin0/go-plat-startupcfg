@@ -1,4 +1,4 @@
-package startupcfg
+package i18n
 
 import (
 	"fmt"
@@ -11,14 +11,14 @@ import (
 	"os"
 )
 
-type i18nTranslator struct {
+type translator struct {
 	defaultTag     language.Tag
 	bundle         *i18n.Bundle
 	localize       *i18n.Localizer
 	templateParser template.Parser
 }
 
-func (l *i18nTranslator) InitFile(yamlFile string, defaultTagString string) error {
+func (l *translator) InitFile(yamlFile string, defaultTagString string) error {
 	configFile, err := os.ReadFile(yamlFile)
 	if err != nil {
 		return err
@@ -33,8 +33,10 @@ func (l *i18nTranslator) InitFile(yamlFile string, defaultTagString string) erro
 	}
 	return l.InitMap(confMap, defaultTagString)
 }
-func (l *i18nTranslator) InitMap(conf map[language.Tag]map[string]string, defaultTagString string) error {
-	defaultTag := l.initTag(defaultTagString, conf)
+func (l *translator) InitMap(conf map[language.Tag]map[string]string, defaultTagString string) error {
+	//需要将所有tag的key都进行赋值，避免有遗漏掉的key未配置的情况，而造成输出报错了
+	conf = l.builderAllKeys(conf)
+	defaultTag := l.initDefaultTag(defaultTagString, conf)
 	bundle := i18n.NewBundle(defaultTag)
 	l.bundle = bundle
 	l.defaultTag = defaultTag
@@ -52,7 +54,13 @@ func (l *i18nTranslator) InitMap(conf map[language.Tag]map[string]string, defaul
 	return nil
 }
 
-func (l *i18nTranslator) initTag(tagString string, allConf map[language.Tag]map[string]string) language.Tag {
+// builderAllKeys 所有的key都需要赋值
+func (l *translator) builderAllKeys(allConf map[language.Tag]map[string]string) map[language.Tag]map[string]string {
+	//TODO
+	return allConf
+}
+
+func (l *translator) initDefaultTag(tagString string, allConf map[language.Tag]map[string]string) language.Tag {
 	if tagString == "" {
 		if len(allConf) > 0 {
 			return lo.Keys(allConf)[0] //未设置会取第一个
@@ -62,7 +70,7 @@ func (l *i18nTranslator) initTag(tagString string, allConf map[language.Tag]map[
 	return language.Make(tagString)
 }
 
-func (l *i18nTranslator) AddMessage(tag string, msgMap map[string]string) error {
+func (l *translator) AddMessage(tag string, msgMap map[string]string) error {
 	messageList := make([]*i18n.Message, 0, len(msgMap))
 	for k, v := range msgMap {
 		messageList = append(messageList, &i18n.Message{
@@ -76,20 +84,26 @@ func (l *i18nTranslator) AddMessage(tag string, msgMap map[string]string) error 
 	}
 	return nil
 }
-func (l *i18nTranslator) SetTemplateParser(templateParser template.Parser) {
+func (l *translator) SetTemplateParser(templateParser template.Parser) {
 	l.templateParser = templateParser
 }
 
-func (l *i18nTranslator) Tag() language.Tag {
+func (l *translator) DefaultTag() language.Tag {
 	return l.defaultTag
 }
-func (l *i18nTranslator) Translate(key string, templateData any) string {
+func (l *translator) Translate(key string, templateData any) string {
 	return l.TranslateByTag("", key, templateData)
 }
-func (l *i18nTranslator) TranslateByTag(tag string, key string, templateData any) string {
+func (l *translator) TranslateByTag(tag string, key string, templateData any) string {
 	localize := l.localize
 	if tag != "" {
-		localize = i18n.NewLocalizer(l.bundle, tag)
+		allTags := l.bundle.LanguageTags() //所有支持的tag，避免乱传不支持
+		for _, oneTag := range allTags {
+			if oneTag.String() == tag {
+				localize = i18n.NewLocalizer(l.bundle, tag)
+				break
+			}
+		}
 	}
 
 	var retStr string
