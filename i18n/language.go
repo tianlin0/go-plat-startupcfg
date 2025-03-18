@@ -144,6 +144,22 @@ func (l *translator) TranslateByTag(tag string, key string, templateData any) st
 		return retStr
 	}
 
-	fmt.Println(err)
-	return key
+	//有数据的情况，可能需要合并数据
+	tempStr, err := l.parserData(key, newTemplateData, l.templateParser)
+	if err != nil {
+		fmt.Println(err)
+		return key
+	}
+	return tempStr
+}
+
+func (l *translator) parserData(src string, data any, parser template.Parser) (string, error) {
+	if parser == nil {
+		parser = new(template.TextParser)
+	}
+	temp, err := parser.Parse(src, "{{", "}}")
+	if err != nil {
+		return src, err
+	}
+	return temp.Execute(data)
 }
