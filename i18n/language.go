@@ -12,11 +12,16 @@ import (
 )
 
 type translator struct {
-	defaultTag     language.Tag
-	bundle         *i18n.Bundle
-	localize       *i18n.Localizer
-	templateParser template.Parser
+	defaultTag            language.Tag
+	bundle                *i18n.Bundle
+	localize              *i18n.Localizer
+	templateParser        template.Parser
+	leftDelim, rightDelim string //变量分隔符
 }
+
+var (
+	allTranslator = make(map[string]*i18n.Localizer) //缓存所有语言,避免重复创建
+)
 
 func (l *translator) InitFile(yamlFile string, defaultTagString string) error {
 	configFile, err := os.ReadFile(yamlFile)
@@ -42,6 +47,8 @@ func (l *translator) InitMap(conf map[language.Tag]map[string]string, defaultTag
 	l.defaultTag = defaultTag
 	l.localize = i18n.NewLocalizer(l.bundle, l.defaultTag.String())
 	l.templateParser = nil
+	l.leftDelim = "{{"
+	l.rightDelim = "}}"
 
 	// 添加绑定初始化数据
 	for tag, messages := range conf {
@@ -86,6 +93,14 @@ func (l *translator) AddMessage(tag string, msgMap map[string]string) error {
 func (l *translator) SetTemplateParser(templateParser template.Parser) {
 	l.templateParser = templateParser
 }
+func (l *translator) SetVariableDelim(leftDelim, rightDelim string) {
+	if leftDelim != "" {
+		l.leftDelim = leftDelim
+	}
+	if rightDelim != "" {
+		l.rightDelim = rightDelim
+	}
+}
 
 func (l *translator) DefaultTag() language.Tag {
 	return l.defaultTag
@@ -96,11 +111,16 @@ func (l *translator) Translate(key string, templateData any) string {
 func (l *translator) TranslateByTag(tag string, key string, templateData any) string {
 	localize := l.localize
 	if tag != "" {
-		allTags := l.bundle.LanguageTags() //所有支持的tag，避免乱传不支持
-		for _, oneTag := range allTags {
-			if oneTag.String() == tag {
-				localize = i18n.NewLocalizer(l.bundle, tag)
-				break
+		if localizeTemp, ok := allTranslator[tag]; ok {
+			localize = localizeTemp
+		} else {
+			allTags := l.bundle.LanguageTags() //所有支持的tag，避免乱传不支持
+			for _, oneTag := range allTags {
+				if oneTag.String() == tag {
+					localize = i18n.NewLocalizer(l.bundle, tag)
+					allTranslator[tag] = localize
+					break
+				}
 			}
 		}
 	}
@@ -157,7 +177,7 @@ func (l *translator) parserData(src string, data any, parser template.Parser) (s
 	if parser == nil {
 		parser = new(template.TextParser)
 	}
-	temp, err := parser.Parse(src, "{{", "}}")
+	temp, err := parser.Parse(src, l.leftDelim, l.rightDelim)
 	if err != nil {
 		return src, err
 	}
