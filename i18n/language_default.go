@@ -99,8 +99,10 @@ func CtxWithTag(ctx context.Context, tag string) context.Context {
 func TranslateCtx(ctx context.Context, key string, templateData ...any) string {
 	tag := ctx.Value(i18nCtxKeyName)
 	tagStr := ""
-	if tagTemp, ok := tag.(string); ok {
-		tagStr = tagTemp
+	if tag != nil {
+		if tagTemp, ok := tag.(string); ok {
+			tagStr = tagTemp
+		}
 	}
 	if templateData == nil || len(templateData) == 0 {
 		return defaultTranslator.TranslateByTag(tagStr, key, nil)
