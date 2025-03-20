@@ -38,6 +38,23 @@ func (l *translator) InitFile(yamlFile string, defaultTagString string) error {
 	}
 	return l.InitMap(confMap, defaultTagString)
 }
+func (l *translator) InitFileWithTag(tag string, yamlFile string, defaultTagString string) error {
+	configFile, err := os.ReadFile(yamlFile)
+	if err != nil {
+		return err
+	}
+	conf := make(map[string]string)
+	if err = yaml.Unmarshal(configFile, conf); err != nil {
+		return err
+	}
+	confMap := make(map[language.Tag]map[string]string)
+	oneTag := language.Make(tag)
+	confMap[oneTag] = make(map[string]string)
+	for k, v := range conf {
+		confMap[oneTag][k] = v
+	}
+	return l.InitMap(confMap, defaultTagString)
+}
 func (l *translator) InitMap(conf map[language.Tag]map[string]string, defaultTagString string) error {
 	//需要将所有tag的key都进行赋值，避免有遗漏掉的key未配置的情况，而造成输出报错了
 	conf = l.builderAllKeys(conf)

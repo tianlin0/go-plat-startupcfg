@@ -49,6 +49,22 @@ func NewYamlFile(yamlFilePath string, defaultTagString string) (*translator, err
 	return defaultTranslator, nil
 }
 
+// NewYamlFileWithLang 初始化
+func NewYamlFileWithLang(lang string, yamlFilePath string, defaultTagString string) (*translator, error) {
+	langLock.Lock()
+	defer langLock.Unlock()
+	if defaultTranslator == nil {
+		defaultTranslator = new(translator)
+	}
+	err := defaultTranslator.InitFileWithTag(lang, yamlFilePath, defaultTagString)
+	if err != nil {
+		return defaultTranslator, err
+	}
+	//初始化默认解析器
+	//defaultTranslator.SetTemplateParser(new(defaultParser))
+	return defaultTranslator, nil
+}
+
 // NewI18nMap 初始化
 // langData  map[string] string 语言简称，map[string]string key,value
 func NewI18nMap(langData map[string]map[string]string, defaultTagString string) (*translator, error) {
@@ -82,17 +98,22 @@ func DefaultTranslator() *translator {
 	return defaultTranslator
 }
 
-// Translate 翻译
-func Translate(tag string, key string, templateData ...any) string {
+// TranslateWithLang 翻译
+func TranslateWithLang(lang string, key string, templateData ...any) string {
 	if templateData == nil || len(templateData) == 0 {
-		return defaultTranslator.TranslateByTag(tag, key, nil)
+		return defaultTranslator.TranslateByTag(lang, key, nil)
 	}
-	return defaultTranslator.TranslateByTag(tag, key, templateData[0])
+	return defaultTranslator.TranslateByTag(lang, key, templateData[0])
 }
 
-// CtxWithTag 设置当前的语言
-func CtxWithTag(ctx context.Context, tag string) context.Context {
-	return context.WithValue(ctx, i18nCtxKeyName, tag)
+// Translate 翻译
+func Translate(key string, templateData ...any) string {
+	return TranslateWithLang("", key, templateData...)
+}
+
+// CtxWithLang 设置当前的语言
+func CtxWithLang(ctx context.Context, lang string) context.Context {
+	return context.WithValue(ctx, i18nCtxKeyName, lang)
 }
 
 // TranslateCtx Ctx翻译
@@ -104,8 +125,5 @@ func TranslateCtx(ctx context.Context, key string, templateData ...any) string {
 			tagStr = tagTemp
 		}
 	}
-	if templateData == nil || len(templateData) == 0 {
-		return defaultTranslator.TranslateByTag(tagStr, key, nil)
-	}
-	return defaultTranslator.TranslateByTag(tagStr, key, templateData[0])
+	return TranslateWithLang(tagStr, key, templateData...)
 }
