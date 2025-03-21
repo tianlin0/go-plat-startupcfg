@@ -98,8 +98,8 @@ func DefaultTranslator() *translator {
 	return defaultTranslator
 }
 
-// TranslateWithLang 翻译
-func TranslateWithLang(lang string, key string, templateData ...any) string {
+// TranslateLang 翻译
+func TranslateLang(lang string, key string, templateData ...any) string {
 	if templateData == nil || len(templateData) == 0 {
 		return defaultTranslator.TranslateByTag(lang, key, nil)
 	}
@@ -108,7 +108,7 @@ func TranslateWithLang(lang string, key string, templateData ...any) string {
 
 // Translate 翻译
 func Translate(key string, templateData ...any) string {
-	return TranslateWithLang("", key, templateData...)
+	return TranslateLang("", key, templateData...)
 }
 
 // CtxWithLang 设置当前的语言
@@ -125,5 +125,5 @@ func TranslateCtx(ctx context.Context, key string, templateData ...any) string {
 			tagStr = tagTemp
 		}
 	}
-	return TranslateWithLang(tagStr, key, templateData...)
+	return TranslateLang(tagStr, key, templateData...)
 }
