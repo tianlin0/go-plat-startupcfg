@@ -118,3 +118,9 @@ func TestEncryptedUnMarshal(t *testing.T) {
 	_ = json.Unmarshal([]byte(jsonStr), mysqlTemp)
 	t.Log(string(mysqlTemp.PasswordEncoded))
 }
+func TestService(t *testing.T) {
+	apiConfig := &startupcfg.ServiceApiConfig{}
+	conv.Unmarshal(`{"domain":"http://www.baidu.com","auth":{"token":"f128828a5ded57910dca668c23d49995"},"urls":{"K11111":"/path"}}`, apiConfig)
+	kk, _ := apiConfig.AuthData("token")
+	fmt.Println(apiConfig, kk)
+}

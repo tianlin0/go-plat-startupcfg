@@ -77,7 +77,7 @@ func (e Encrypted) Get() (string, error) {
 	if decryptFunc != nil {
 		return decryptFunc(e)
 	}
-	return "", fmt.Errorf("no set defaultDecrypt")
+	return string(e), fmt.Errorf("no set defaultDecrypt")
 }
 
 //// MarshalJSON 实现json Marshaler接口 自定义json 编码
