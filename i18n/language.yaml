@@ -4,3 +4,4 @@ en:
 zh:
   "aaa.bbbb.ccccc": "错误{{.Name}}"
   "aaa.bbbb.ccccc.dddd": "错误2"
+  "aaa.bbbb.cccccddd": "错误2{{.}}"

@@ -19,14 +19,14 @@ func TestAesCbc(t *testing.T) {
 		return
 	}
 
-	mm := i18n.Translate("aa", "aaa.bbbb.ccccc", &AAA{
+	mm := i18n.Translate("aaa.bbbb.ccccc", &AAA{
 		Name: "mmmm",
 	})
 	fmt.Println(mm)
 
 	go func() {
 		for i := 0; i < 100; i++ {
-			mm := i18n.Translate("en", "aaa.bbbb.ccccc", &AAA{
+			mm := i18n.Translate("aaa.bbbb.ccccc", &AAA{
 				Name: "mmmm",
 			})
 			fmt.Println(mm)
@@ -36,11 +36,24 @@ func TestAesCbc(t *testing.T) {
 
 	time.Sleep(5 * time.Second)
 
-	mm = i18n.Translate("zh", "aaa.bbbb.ccccc", &AAA{
+	mm = i18n.Translate("aaa.bbbb.ccccc", &AAA{
 		Name: "mmmm",
 	})
 
 	fmt.Println(mm)
 
 	time.Sleep(time.Minute)
+}
+
+func TestAesCbcv(t *testing.T) {
+
+	// 初始化
+	_, err := i18n.NewYamlFile("language.yaml", "zh")
+	if err != nil {
+		return
+	}
+
+	mm := i18n.Translate("aaa.bbbb.cccccddd", "nihao")
+
+	fmt.Println(mm)
 }

@@ -3,6 +3,7 @@ module github.com/tianlin0/go-plat-startupcfg
 go 1.23.2
 
 require (
+	github.com/forgoer/openssl v1.6.0
 	github.com/json-iterator/go v1.1.12
 	github.com/nicksnyder/go-i18n/v2 v2.5.1
 	github.com/samber/lo v1.47.0
