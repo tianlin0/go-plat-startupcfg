@@ -11,6 +11,10 @@ import (
 
 // FormatWithSecretMap 组合解密和模板替换操作，还原密码配置
 func FormatWithSecretMap(cfgTemplate string, encryptedMap map[string]string, encryptionKey string) (string, error) {
+	if encryptedMap == nil || len(encryptedMap) == 0 {
+		return cfgTemplate, nil
+	}
+
 	decodeSecretMap := make(map[string]string)
 	for key, encryptedValue := range encryptedMap {
 		decodedValue, err := hex.DecodeString(encryptedValue)
